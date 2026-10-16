@@ -143,13 +143,6 @@ Review the deployment plan before deploying. These commands target the developme
 - Version-controlled Databricks project deployment.
 - Curated metrics and dashboards for analytics.
 
-## Security Notes
-
-- Do not commit passwords, access tokens, API keys, or connection secrets.
-- Keep local credential files and environment-specific secrets outside version control.
-- Use appropriate permissions for workspace resources and data.
-- Review repository visibility and deployment targets before sharing or deploying.
-
 ## Author
 
 **Sahil N. Sankeshwari**
