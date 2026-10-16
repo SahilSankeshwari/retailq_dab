@@ -53,6 +53,17 @@ flowchart TD
 | Databricks SQL | Metrics and analytics |
 | Git and GitHub | Version control and source management |
 
+
+## Key Features
+
+- **Multi-source ingestion:** Integrates data from Azure Blob Storage, PostgreSQL (Neon), and Salesforce.
+- **Medallion architecture:** Separates raw, cleaned, and business-ready data into Bronze, Silver, and Gold layers.
+- **PySpark transformations:** Implements data processing logic for retail entities and sales data.
+- **Pipeline orchestration:** Uses Databricks jobs and Lakeflow Spark Declarative Pipelines to organize processing workflows.
+- **Declarative deployment:** Uses Databricks Asset Bundles (DAB) to manage project resources and development deployments.
+- **Analytics and reporting:** Includes metric views and Databricks dashboard definitions.
+- **Version control:** Tracks project code and configuration using Git and GitHub.
+
 ## Data Processing Layers
 
 ### Bronze — Raw Data
