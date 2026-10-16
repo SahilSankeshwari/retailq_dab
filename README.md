@@ -84,6 +84,17 @@ flowchart TD
 - Support reporting, metric views, and dashboards.
 - Make processed data easier to consume for business analysis.
 
+
+## Pipeline Workflow
+
+1. **Source ingestion:** Read data from Azure Blob Storage, PostgreSQL (Neon), and Salesforce.
+2. **Bronze processing:** Ingest source data into the configured Bronze layer.
+3. **Silver transformation:** Apply the configured PySpark cleaning and transformation logic.
+4. **Gold processing:** Prepare curated data for analytics and reporting.
+5. **Metrics and dashboards:** Use metric views and Databricks dashboards to present business insights.
+6. **Deployment and orchestration:** Manage pipeline and job resources through Databricks Asset Bundles.
+
+
 ## Repository Structure
 
 ```text
