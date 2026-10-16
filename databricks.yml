@@ -1,0 +1,41 @@
+# This is a Declarative Automation Bundle definition for retailq_dab.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: retailq_dab
+  uuid: 446254ad-fbd1-43f1-8052-769d2b6c42f1
+
+include:
+  - resources/*.yml
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+variables:
+  catalog:
+    description: The catalog to use
+  schema:
+    description: The schema to use
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-f3c7de2b-35f6.cloud.databricks.com
+    variables:
+      catalog: retail_q_dab_dev
+      schema: ${workspace.current_user.short_name}
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-f3c7de2b-35f6.cloud.databricks.com
+      # We explicitly deploy to /Workspace/Users/sankeshwarisahil2003@gmail.com to make sure we only have a single copy.
+      root_path: /Workspace/Users/sankeshwarisahil2003@gmail.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: retail_q
+      schema: prod
+    permissions:
+      - user_name: sankeshwarisahil2003@gmail.com
+        level: CAN_MANAGE

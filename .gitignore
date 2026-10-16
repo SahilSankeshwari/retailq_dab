@@ -1,0 +1,29 @@
+.databricks/
+build/
+dist/
+__pycache__/
+*.egg-info
+.venv/
+scratch/**
+!scratch/README.md
+**/explorations/**
+**/!explorations/README.md
+
+# Local credentials and secrets
+.databrickscfg
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local IDE and operating system files
+.DS_Store
+Thumbs.db
+
+# Generated editor stub files
+.vscode/__builtins__.pyi
+
+# Local backup copies - keep out of Git
+*.backup
+*.backup[0-9]

@@ -1,0 +1,19 @@
+
+resources:
+  pipelines:
+    retail_transformation_v2:
+      name: retail_transformation_v2
+      libraries:
+        - glob:
+            include: ../src/retail_transformation_v2/bronze_to_silver/**
+        - glob:
+            include: ../src/retail_transformation_v2/silver_to_gold/fact_sales.py
+        - glob:
+            include: ../src/03_calendar.py
+      catalog: retail_q_dab_dev
+      channel: CURRENT
+      continuous: false
+      photon: true
+      root_path: ../src/retail_transformation_v2
+      schema: retail_silver
+      serverless: true

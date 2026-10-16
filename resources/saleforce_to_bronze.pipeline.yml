@@ -1,0 +1,23 @@
+resources:
+  pipelines:
+    saleforce_to_bronze:
+      name: saleforce_to_bronze
+      catalog: retail_q_dab_dev
+      channel: CURRENT
+      ingestion_definition:
+        connection_name: saleforce_to_bronze
+        objects:
+          - table:
+              destination_catalog: retail_q_dab_dev
+              destination_schema: saleforce_bronze
+              source_schema: objects
+              source_table: Account
+              table_configuration:
+                scd_type: SCD_TYPE_2
+          - table:
+              destination_catalog: retail_q_dab_dev
+              destination_schema: saleforce_bronze
+              source_schema: objects
+              source_table: Opportunity
+        source_type: SALESFORCE
+      schema: saleforce_bronze

@@ -1,0 +1,95 @@
+﻿resources:
+  jobs:
+    retailq_end_to_end_job:
+      name: "RetailQ End to End Job - DAB Dev"
+      tasks:
+        - task_key: blob_to_bronze
+          disabled: false
+          email_notifications: {}
+          notebook_task:
+            notebook_path: ../src/01_blob_to_bronze.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: postgres_to_bronze
+          disabled: false
+          email_notifications: {}
+          pipeline_task:
+            pipeline_id:  ${resources.pipelines.postgres_to_bronze.id}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: saleforce_to_bronze
+          disabled: false
+          email_notifications: {}
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.saleforce_to_bronze.id}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Data_Processing_and_Reporting_Pipeline
+          depends_on:
+            - task_key: blob_to_bronze
+            - task_key: postgres_to_bronze
+            - task_key: saleforce_to_bronze
+          disabled: false
+          email_notifications: {}
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.retail_transformation_v2.id}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Refresh_Gold_Views
+          depends_on:
+            - task_key: Data_Processing_and_Reporting_Pipeline
+          disabled: false
+          email_notifications: {}
+          notebook_task:
+            notebook_path: ../src/02_Gold_Views.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Refresh_Metric_View
+          depends_on:
+            - task_key: Refresh_Gold_Views
+          disabled: false
+          email_notifications: {}
+          notebook_task:
+            notebook_path: ../src/04_Metric_view.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Business_Insights_Dashboard
+          depends_on:
+            - task_key: Refresh_Metric_View
+          dashboard_task:
+            dashboard_id: 01f1c30de7af169cb2e0e236050b29fb
+            subscription: {}
+          disabled: true
+          email_notifications: {}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Retail_Sales_and_Inventory_Analytics
+          depends_on:
+            - task_key: Refresh_Metric_View
+          dashboard_task:
+            dashboard_id: 01f1c30f895d172bb299cd9405e31951
+            subscription: {}
+          disabled: true
+          email_notifications: {}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      max_concurrent_runs: 1
+      performance_target: PERFORMANCE_OPTIMIZED
+      queue:
+        enabled: true
+      timeout_seconds: 0
+      webhook_notifications: {}
+
