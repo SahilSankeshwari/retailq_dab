@@ -99,6 +99,16 @@ retailq_dab/
 └── README.md         # Project documentation
 ```
 
+## Dashboard Preview
+
+![Retail Sales & Performance Dashboard]
+<img width="910" height="333" alt="image" src="https://github.com/user-attachments/assets/bb62e17c-9b39-4520-9ef8-bee77c03975a" />
+
+![Retail Metrics Detailed Analysis]
+<img width="872" height="329" alt="image" src="https://github.com/user-attachments/assets/1e7274ca-dbe0-4687-8399-13fb957a0b96" />
+<img width="906" height="310" alt="image" src="https://github.com/user-attachments/assets/11c87a97-936d-4528-a1d8-ef382d51a30b" />
+
+
 ## Getting Started
 
 ### Prerequisites
