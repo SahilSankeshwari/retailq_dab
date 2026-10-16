@@ -19,23 +19,20 @@ Retail analytics often requires data from different systems and formats. RetailQ
 
 ## Architecture
 
-## Architecture
-
 ```mermaid
 flowchart TD
-    A["Azure Blob Storage"] --> D["Bronze Layer<br/>Raw Data Ingestion"]
+    A["Azure Blob Storage"] --> D["Bronze Layer: Raw Data"]
     B["PostgreSQL (Neon)"] --> D
     C["Salesforce"] --> D
 
-    D --> E["Silver Layer<br/>Cleaning and Transformations"]
-    E --> F["Gold Layer<br/>Business-Ready Data"]
+    D --> E["Silver Layer: Cleaned Data"]
+    E --> F["Gold Layer: Business-Ready Data"]
     F --> G["Metric Views"]
     G --> H["Databricks Dashboards"]
 
-    I["Databricks Asset Bundles"] -. "Deployment and Configuration" .-> J["Databricks Jobs and Pipelines"]
-    J -. "Orchestrates" .-> D
-    J -. "Orchestrates" .-> E
-</mermaid>
+    I["Databricks Asset Bundles (DAB)"] --> J["Databricks Jobs and Pipelines"]
+    J --> D
+    J --> E
 ```
 
 
