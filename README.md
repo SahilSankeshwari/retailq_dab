@@ -19,38 +19,25 @@ Retail analytics often requires data from different systems and formats. RetailQ
 
 ## Architecture
 
-```text
-+----------------------+  +----------------------+  +----------------------+
-| Azure Blob Storage   |  | PostgreSQL (Neon)    |  | Salesforce           |
-+----------+-----------+  +----------+-----------+  +----------+-----------+
-           |                         |                         |
-           +-------------------------+-------------------------+
-                                     |
-                                     v
-                         +------------------------+
-                         |     Bronze Layer       |
-                         |   Source Data Ingestion|
-                         +-----------+------------+
-                                     |
-                                     v
-                         +------------------------+
-                         |      Silver Layer      |
-                         | Cleaning and           |
-                         | Transformations        |
-                         +-----------+------------+
-                                     |
-                                     v
-                         +------------------------+
-                         |       Gold Layer       |
-                         | Curated Business Data  |
-                         +-----------+------------+
-                                     |
-                                     v
-                         +------------------------+
-                         | Metric Views &         |
-                         | Databricks Dashboards  |
-                         +------------------------+
+## Architecture
+
+```mermaid
+flowchart TD
+    A["Azure Blob Storage"] --> D["Bronze Layer<br/>Raw Data Ingestion"]
+    B["PostgreSQL (Neon)"] --> D
+    C["Salesforce"] --> D
+
+    D --> E["Silver Layer<br/>Cleaning and Transformations"]
+    E --> F["Gold Layer<br/>Business-Ready Data"]
+    F --> G["Metric Views"]
+    G --> H["Databricks Dashboards"]
+
+    I["Databricks Asset Bundles"] -. "Deployment and Configuration" .-> J["Databricks Jobs and Pipelines"]
+    J -. "Orchestrates" .-> D
+    J -. "Orchestrates" .-> E
+</mermaid>
 ```
+
 
 ## Technology Stack
 
