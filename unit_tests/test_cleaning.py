@@ -1,4 +1,4 @@
-﻿from cleaning import standardize_product_id
+from cleaning import standardize_product_id
 
 
 def test_product_id_is_uppercase():
