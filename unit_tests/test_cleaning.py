@@ -1,5 +1,4 @@
 import pytest
-
 from cleaning import standardize_product_id
 
 
