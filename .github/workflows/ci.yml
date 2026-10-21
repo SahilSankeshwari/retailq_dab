@@ -24,7 +24,7 @@ jobs:
         run: uv sync --group dev
 
       - name: Run unit tests
-        run: uv run pytest -c pytest-unit.ini unit_tests -v
+        run: uv run pytest --noconftest -c pytest-unit.ini unit_tests -v
 
       - name: Check code quality
         run: uv run ruff check unit_tests
