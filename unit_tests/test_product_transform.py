@@ -1,5 +1,8 @@
+
+import os
 from datetime import date
 
+import pytest
 from product_transform import transform_product_catalog
 from pyspark.sql.types import (
     DateType,
@@ -11,6 +14,10 @@ from pyspark.sql.types import (
 )
 
 
+@pytest.mark.skipif(
+    os.getenv("DATABRICKS_TESTS") != "1",
+    reason="Requires Databricks serverless compute",
+)
 def test_product_catalog_standardization(spark):
     schema = StructType(
         [
