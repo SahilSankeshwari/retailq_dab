@@ -1,0 +1,69 @@
+﻿
+name: RetailQ CI/CD
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install project dependencies
+        run: uv sync --group dev
+
+      - name: Run unit tests
+        run: uv run pytest --noconftest -c pytest-unit.ini unit_tests -v
+
+      - name: Check code quality
+        run: uv run ruff check unit_tests
+
+      - name: Check formatting
+        run: uv run ruff format --check unit_tests
+
+  deploy-dev:
+    needs: quality-checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      DATABRICKS_HOST: https://dbc-f3c7de2b-35f6.cloud.databricks.com
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Databricks credentials
+        shell: bash
+        run: |
+          if [ -z "$DATABRICKS_TOKEN" ]; then
+            echo "DATABRICKS_TOKEN secret is missing."
+            exit 1
+          fi
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate bundle
+        run: databricks bundle validate -t dev
+
+      - name: Deploy to development
+        run: databricks bundle deploy -t dev
