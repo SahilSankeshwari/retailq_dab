@@ -24,7 +24,7 @@ jobs:
         run: uv sync --group dev
 
       - name: Run unit tests
-        run: uv run pytest unit_tests -v
+        run: uv run pytest --confcutdir=unit_tests unit_tests -v
 
       - name: Check code quality
         run: uv run ruff check unit_tests
