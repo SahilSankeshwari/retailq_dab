@@ -1,13 +1,18 @@
-﻿resources:
+resources:
   jobs:
     retailq_end_to_end_job:
       name: "RetailQ End to End Job - DAB Dev"
+      tags:
+        project: retailq
+        environment: development
       tasks:
         - task_key: blob_to_bronze
           disabled: false
           email_notifications: {}
           notebook_task:
             notebook_path: ../src/01_blob_to_bronze.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
             source: WORKSPACE
           run_if: ALL_SUCCESS
           timeout_seconds: 0
@@ -15,14 +20,18 @@
         - task_key: postgres_to_bronze
           disabled: false
           email_notifications: {}
+          max_retries: 2
+          min_retry_interval_millis: 300000
           pipeline_task:
-            pipeline_id:  ${resources.pipelines.postgres_to_bronze.id}
+            pipeline_id: ${resources.pipelines.postgres_to_bronze.id}
           run_if: ALL_SUCCESS
           timeout_seconds: 0
           webhook_notifications: {}
         - task_key: saleforce_to_bronze
           disabled: false
           email_notifications: {}
+          max_retries: 2
+          min_retry_interval_millis: 300000
           pipeline_task:
             pipeline_id: ${resources.pipelines.saleforce_to_bronze.id}
           run_if: ALL_SUCCESS
@@ -35,18 +44,37 @@
             - task_key: saleforce_to_bronze
           disabled: false
           email_notifications: {}
+          max_retries: 2
+          min_retry_interval_millis: 300000
           pipeline_task:
             pipeline_id: ${resources.pipelines.retail_transformation_v2.id}
           run_if: ALL_SUCCESS
           timeout_seconds: 0
           webhook_notifications: {}
-        - task_key: Refresh_Gold_Views
+        - task_key: Refresh_Calendar
           depends_on:
             - task_key: Data_Processing_and_Reporting_Pipeline
           disabled: false
           email_notifications: {}
           notebook_task:
+            notebook_path: ../src/03_calendar.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              start_date: "2025-01-01"
+              end_date: "2030-12-31"
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Refresh_Gold_Views
+          depends_on:
+            - task_key: Refresh_Calendar
+          disabled: false
+          email_notifications: {}
+          notebook_task:
             notebook_path: ../src/02_Gold_Views.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
             source: WORKSPACE
           run_if: ALL_SUCCESS
           timeout_seconds: 0
@@ -58,6 +86,8 @@
           email_notifications: {}
           notebook_task:
             notebook_path: ../src/04_Metric_view.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
             source: WORKSPACE
           run_if: ALL_SUCCESS
           timeout_seconds: 0
@@ -68,23 +98,14 @@
           dashboard_task:
             dashboard_id: 01f1c30de7af169cb2e0e236050b29fb
             subscription: {}
-          disabled: true
-          email_notifications: {}
-          run_if: ALL_SUCCESS
-          timeout_seconds: 0
-          webhook_notifications: {}
-        - task_key: Retail_Sales_and_Inventory_Analytics
-          depends_on:
-            - task_key: Refresh_Metric_View
-          dashboard_task:
-            dashboard_id: 01f1c30f895d172bb299cd9405e31951
-            subscription: {}
-          disabled: true
+          disabled: false
           email_notifications: {}
           run_if: ALL_SUCCESS
           timeout_seconds: 0
           webhook_notifications: {}
       email_notifications:
+        on_failure:
+          - sankeshwarisahil2003@gmail.com
         no_alert_for_skipped_runs: false
       max_concurrent_runs: 1
       performance_target: PERFORMANCE_OPTIMIZED

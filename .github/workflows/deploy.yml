@@ -1,0 +1,46 @@
+name: Deploy RetailQ DAB
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deployment target (dev or prod)
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+        default: dev
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Databricks credentials
+        shell: bash
+        run: |
+          if [ -z "$DATABRICKS_TOKEN" ]; then
+            echo "DATABRICKS_TOKEN secret is missing."
+            exit 1
+          fi
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate bundle
+        run: databricks bundle validate -t ${{ github.event.inputs.target }}
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t ${{ github.event.inputs.target }}

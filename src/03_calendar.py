@@ -2,11 +2,11 @@
 from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
-START_DATE = "2020-01-01"
+START_DATE = "2025-01-01"
 END_DATE = "2030-12-31"
 
 
-@dp.table(name="retail_q_dab_dev.retail_gold.dim_calendar")
+@dp.table(name="retail_gold.dim_calendar")
 def dim_calendar():
     dates = (
         spark.range(1)

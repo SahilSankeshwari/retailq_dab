@@ -2,7 +2,7 @@ from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
 @dp.materialized_view(
-    name="retail_q_dab_dev.retail_silver.account",
+    name="retail_silver.account",
     comment="Salesforce account data with core business columns and data quality checks"
 )
 @dp.expect_or_drop("non-null id", "id IS NOT NULL")
@@ -10,7 +10,7 @@ from pyspark.sql import functions as F
 def account_clean():
     # Read source table as batch (materialized view): picks up all updates/deletes
     # from the CDC-style bronze target on each pipeline refresh
-    source_df = spark.read.table("retail_q_dab_dev.saleforce_bronze.account")
+    source_df = spark.read.table("saleforce_bronze.account")
     
     # Select core business columns with lowercase underscore naming
     return source_df.select(

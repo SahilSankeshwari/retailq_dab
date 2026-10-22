@@ -2,7 +2,7 @@ from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
 @dp.materialized_view(
-    name="retail_q_dab_dev.retail_silver.opportunity",
+    name="retail_silver.opportunity",
     comment="Salesforce opportunity data with core sales fields and data quality checks"
 )
 @dp.expect_or_drop("non-null id", "id IS NOT NULL")
@@ -14,7 +14,7 @@ from pyspark.sql import functions as F
 def opportunity_clean():
     # Read source table as batch (materialized view): picks up all updates/deletes
     # from the CDC-style bronze target on each pipeline refresh
-    source_df = spark.read.table("retail_q_dab_dev.saleforce_bronze.opportunity")
+    source_df = spark.read.table("saleforce_bronze.opportunity")
     
     # Select core sales opportunity columns with lowercase underscore naming
     return source_df.select(
