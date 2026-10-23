@@ -1,7 +1,7 @@
 resources:
   jobs:
     retailq_end_to_end_job:
-      name: "RetailQ End to End Job - DAB Dev"
+      name: ${var.job_name}
       tags:
         project: retailq
         environment: development
@@ -96,7 +96,7 @@ resources:
           depends_on:
             - task_key: Refresh_Metric_View
           dashboard_task:
-            dashboard_id: 01f1c30de7af169cb2e0e236050b29fb
+            dashboard_id: ${var.dashboard_id}
             subscription: {}
           disabled: false
           email_notifications: {}
