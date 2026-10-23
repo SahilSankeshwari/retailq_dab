@@ -1,21 +1,21 @@
 from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
+
 @dp.materialized_view(
-    name="retail_q_dab_dev.retail_silver.opportunity",
-    comment="Salesforce opportunity data with core sales fields and data quality checks"
+    name="retail_silver.opportunity",
+    comment="Salesforce opportunity data with core sales fields and data quality checks",
 )
 @dp.expect_or_drop("non-null id", "id IS NOT NULL")
 @dp.expect("non-null name", "name IS NOT NULL")
 @dp.expect("valid amount", "amount IS NULL OR amount >= 0")
 @dp.expect("valid probability", "probability IS NULL OR (probability >= 0 AND probability <= 100)")
-@dp.expect("valid stage",
-           "stage_name IN ('Prospecting','Closed Won','Closed Lost')")
+@dp.expect("valid stage", "stage_name IN ('Prospecting','Closed Won','Closed Lost')")
 def opportunity_clean():
     # Read source table as batch (materialized view): picks up all updates/deletes
     # from the CDC-style bronze target on each pipeline refresh
-    source_df = spark.read.table("retail_q_dab_dev.saleforce_bronze.opportunity")
-    
+    source_df = spark.read.table("saleforce_bronze.opportunity")
+
     # Select core sales opportunity columns with lowercase underscore naming
     return source_df.select(
         F.col("Id").alias("id"),
@@ -26,9 +26,9 @@ def opportunity_clean():
         F.col("StageName").alias("stage_name"),
         F.col("Amount").alias("amount"),
         F.when(F.col("amount") > 100000, "ENTERPRISE")
-         .when(F.col("amount") > 25000, "MID_MARKET")
-         .otherwise("SMALL")
-         .alias("deal_size"),
+        .when(F.col("amount") > 25000, "MID_MARKET")
+        .otherwise("SMALL")
+        .alias("deal_size"),
         F.col("Probability").alias("probability"),
         F.col("CloseDate").alias("close_date"),
         F.col("Type").alias("type"),
@@ -39,6 +39,5 @@ def opportunity_clean():
         F.col("ForecastCategory").alias("forecast_category"),
         F.col("OwnerId").alias("owner_id"),
         F.col("CreatedDate").alias("created_date"),
-        F.col("LastModifiedDate").alias("last_modified_date")
+        F.col("LastModifiedDate").alias("last_modified_date"),
     )
-    

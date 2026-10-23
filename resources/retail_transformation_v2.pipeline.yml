@@ -8,9 +8,7 @@ resources:
             include: ../src/retail_transformation_v2/bronze_to_silver/**
         - glob:
             include: ../src/retail_transformation_v2/silver_to_gold/fact_sales.py
-        - glob:
-            include: ../src/03_calendar.py
-      catalog: retail_q_dab_dev
+      catalog: ${var.catalog}
       channel: CURRENT
       continuous: false
       photon: true
