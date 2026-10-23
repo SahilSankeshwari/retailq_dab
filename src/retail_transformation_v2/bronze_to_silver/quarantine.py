@@ -46,9 +46,7 @@ def _to_quarantine(rejected, source_table, source_system, source_file=None, inge
         F.lit(source_system).alias("source_system"),
         F.col("_q_reason").alias("rejection_reason"),
         # Complete original record as VARIANT; NULL fields are kept explicitly
-        F.expr(
-            f"parse_json(to_json({struct_expr}, Map('ignoreNullFields', 'false')))"
-        ).alias("record_data"),
+        F.expr(f"parse_json(to_json({struct_expr}, Map('ignoreNullFields', 'false')))").alias("record_data"),
         (F.col(source_file) if source_file else F.lit(None).cast("string")).alias("source_file"),
         (F.col(ingestion_ts) if ingestion_ts else F.lit(None).cast("timestamp")).alias("ingestion_timestamp"),
         F.current_timestamp().alias("quarantined_at"),
@@ -58,9 +56,9 @@ def _to_quarantine(rejected, source_table, source_system, source_file=None, inge
 @dp.materialized_view(
     name="retail_silver.quarantine_records",
     comment="Centralized quarantine: records rejected by enforceable (expect_or_drop) "
-            "data-quality rules across all five Silver source tables. Warning-only "
-            "violations are NOT captured (they remain in Silver). Full recompute each "
-            "refresh — no duplicate quarantine records on reruns.",
+    "data-quality rules across all five Silver source tables. Warning-only "
+    "violations are NOT captured (they remain in Silver). Full recompute each "
+    "refresh — no duplicate quarantine records on reruns.",
 )
 def quarantine_records():
     # ── 1) Blob Storage — transactions ────────────────────────────────────
@@ -79,8 +77,11 @@ def quarantine_records():
         )
     )
     txn_q = _to_quarantine(
-        txn, "transactions", "Blob Storage",
-        source_file="_source_file", ingestion_ts="_ingestion_timestamp",
+        txn,
+        "transactions",
+        "Blob Storage",
+        source_file="_source_file",
+        ingestion_ts="_ingestion_timestamp",
     )
 
     # ── 2) PostgreSQL — product_catalog ──────────────────────────────────
@@ -131,10 +132,4 @@ def quarantine_records():
     )
     inv_q = _to_quarantine(inv, "inventory", "PostgreSQL")
 
-    return (
-        txn_q
-        .unionByName(pc_q)
-        .unionByName(acct_q)
-        .unionByName(opp_q)
-        .unionByName(inv_q)
-    )
+    return txn_q.unionByName(pc_q).unionByName(acct_q).unionByName(opp_q).unionByName(inv_q)

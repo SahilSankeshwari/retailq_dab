@@ -1,4 +1,3 @@
-
 from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
@@ -8,22 +7,18 @@ END_DATE = "2030-12-31"
 
 @dp.table(name="retail_gold.dim_calendar")
 def dim_calendar():
-    dates = (
-        spark.range(1)
-        .select(
-            F.explode(
-                F.sequence(
-                    F.to_date(F.lit(START_DATE)),
-                    F.to_date(F.lit(END_DATE)),
-                    F.expr("INTERVAL 1 DAY"),
-                )
-            ).alias("date")
-        )
+    dates = spark.range(1).select(
+        F.explode(
+            F.sequence(
+                F.to_date(F.lit(START_DATE)),
+                F.to_date(F.lit(END_DATE)),
+                F.expr("INTERVAL 1 DAY"),
+            )
+        ).alias("date")
     )
 
     return (
-        dates
-        .withColumn("year", F.year("date"))
+        dates.withColumn("year", F.year("date"))
         .withColumn("quarter", F.quarter("date"))
         .withColumn("month", F.month("date"))
         .withColumn("month_name", F.date_format("date", "MMMM"))

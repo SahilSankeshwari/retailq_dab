@@ -18,9 +18,10 @@
 # Current status: WORKING with clean data (0 unmatched, 0 duplicates).
 # Last verified: Oct 22, 2026.
 
-from pyspark.sql.functions import upper, trim, col, row_number
-from pyspark.sql.window import Window
 from pyspark import pipelines as dp
+from pyspark.sql.functions import col, row_number, trim, upper
+from pyspark.sql.window import Window
+
 
 @dp.table(name="retail_gold.fact_sales")
 def fact_sales():
@@ -31,11 +32,9 @@ def fact_sales():
     # key the CSV source provides). If the same opportunity name ever appears
     # twice, keep only the most recently modified version so the join cannot
     # multiply fact rows. With clean data this is a no-op.
-    name_window = Window.partitionBy(upper(trim(col("name")))) \
-        .orderBy(col("last_modified_date").desc_nulls_last())
+    name_window = Window.partitionBy(upper(trim(col("name")))).orderBy(col("last_modified_date").desc_nulls_last())
     opportunity_dedup = (
-        opportunity_df
-        .withColumn("_row_num", row_number().over(name_window))
+        opportunity_df.withColumn("_row_num", row_number().over(name_window))
         .filter(col("_row_num") == 1)
         .drop("_row_num")
     )
@@ -43,9 +42,9 @@ def fact_sales():
     joined_df = transactions_df.alias("t").join(
         opportunity_dedup.alias("o"),
         upper(trim(transactions_df.opportunity_name)) == upper(trim(opportunity_dedup.name)),
-        how="left"
+        how="left",
     )
-    
+
     # Select important columns (customize as needed)
     selected_df = joined_df.select(
         "t.transaction_id",
@@ -63,7 +62,7 @@ def fact_sales():
         "o.stage_name",
         "o.owner_id",
         "o.amount",
-        col("o.account_id").alias("customer_id")
+        col("o.account_id").alias("customer_id"),
     )
-    
+
     return selected_df

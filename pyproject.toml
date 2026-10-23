@@ -35,9 +35,21 @@ line-length = 120
 
 target-version = "py312"
 
+# Databricks runtime injects `spark` (SparkSession) and `dbutils`
+# (Databricks Utilities) as global built-in names in both notebooks
+# and Spark Declarative Pipeline (SDP) Python files. Declaring them
+# here prevents ruff F821 "undefined name" false positives without
+# adding runtime imports that would break in the Databricks environment.
+builtins = ["spark", "dbutils"]
+
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Notebook cells routinely define widgets before importing modules;
+# E402 (module-level import not at top of file) is a false positive there.
+"*.ipynb" = ["E402"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
