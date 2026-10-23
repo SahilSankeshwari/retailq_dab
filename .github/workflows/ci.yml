@@ -32,7 +32,7 @@ jobs:
         run: uv run pytest --noconftest -c pytest-unit.ini unit_tests -v
 
       - name: Check code quality
-        run: uv run ruff check src/ unit_tests/
+        run: uv run ruff check src/ unit_tests/ tests/
 
       - name: Check formatting
-        run: uv run ruff format --check src/ unit_tests/
+        run: uv run ruff format --check src/ unit_tests/ tests/

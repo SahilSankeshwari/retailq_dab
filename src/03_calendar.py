@@ -1,3 +1,15 @@
+# ── DEPRECATED — DO NOT USE ────────────────────────────────────────────
+# This file is NOT included in the silver pipeline library configuration
+# (retail_transformation_v2.pipeline.yml includes only bronze_to_silver/**
+# and silver_to_gold/fact_sales.py). The calendar dimension is created by
+# the notebook src/03_calendar.ipynb, which is run as a separate job task
+# (Refresh_Calendar) with catalog and date-range parameters passed from
+# the job YAML.
+#
+# This file is retained for reference only. If the calendar logic needs
+# to move back into the SDP pipeline, update the pipeline YAML to include
+# this file and remove the notebook task.
+
 from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 

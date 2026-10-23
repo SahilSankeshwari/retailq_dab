@@ -21,6 +21,10 @@ scratch/**
 .DS_Store
 Thumbs.db
 
+# Python tool caches
+.pytest_cache/
+.ruff_cache/
+
 # Generated editor stub files
 .vscode/__builtins__.pyi
 
